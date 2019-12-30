@@ -9,6 +9,8 @@
 bin/
 pkg/
 
+# Test CSV data lockfiles
+*lock.*.csv*
 
 # Test binary, built with `go test -c`
 *.test
