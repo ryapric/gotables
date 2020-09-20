@@ -7,8 +7,8 @@ import (
 
 // Table is the highest-level struct. Tables are treated as maps
 type Table struct {
-	ColNames []string
-	Data map[string][]string
+	Colnames []string
+	Data     map[string][]string
 }
 
 // ReadCSV will read a CSV file into a Table struct
@@ -23,34 +23,52 @@ func ReadCSV(filepath string) Table {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	table := tabulateCSV(records)
 	return table
 }
 
-// tabulateCSV will iterate through what csv.ReadAll() returns, and insert values
-// into a Table struct
+// tabulateCSV will iterate through what csv.ReadAll() returns, and insert
+// values into a Table struct
 func tabulateCSV(records [][]string) Table {
-	colNames := records[0][:]
-	tableRaw := make(map[string][]string)
-	// Pad map with colNames
-	for _, colName := range colNames {
-		tableRaw[colName] = nil
-	}
+	colnames := records[0][:]
+	tableRaw := make(map[string][]string, len(records))
 
+	// Pad map with colnames
+	for _, colname := range colnames {
+		tableRaw[colname] = nil
+	}
 
 	// Iterate through each record, then each field, appending to the Table map.
 	// This loop iterator nomenclature relies on the csv Reader failing if the
-	// structure of the read data is bad, and also that ordering of a map
-	// iterator is preserved.
+	// structure of the read data is bad, and also that ordering of a map iterator
+	// is preserved.
 	for rowIndex := range records {
-		for colIndex, colName := range colNames {
+		for colIndex, colName := range colnames {
 			if rowIndex == 0 {
 				continue
 			}
 			tableRaw[colName] = append(tableRaw[colName], records[rowIndex][colIndex])
 		}
 	}
-	table := Table{ColNames: colNames, Data: tableRaw}
+	table := Table{Colnames: colnames, Data: tableRaw}
 	return table
+}
+
+// Multiply multiples columns together, and stores the result in column `result`
+func (t *Table) Multiply(result string, operands ...string) {
+	for _, operand := range operands {
+		for colname, colvalues := range t.Data {
+			if colname != operand {
+				continue
+			}
+			for rownum := range colvalues {
+				t.Data[operand], err := utils.ConvertColStringToFloat(t.Data[operand])
+				if err != nil {
+					panic(err)
+				}
+				t.Data[result][rownum] = t.Data[operand][rownum] // * &t["price"][rownum]
+			}
+		}
+	}
 }
