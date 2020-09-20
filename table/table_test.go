@@ -1,22 +1,17 @@
 package table
 
 import (
+	"reflect"
 	"testing"
 )
 
-var table Table = ReadCSV("../testdata/iris.csv")
-
 func TestReadCSV(t *testing.T) {
+	table := ReadCSV("../testdata/basic.csv")
+
 	var got interface{}
 	var want interface{}
 
-	colnames := []string{
-		"Sepal.Length",
-		"Sepal.Width",
-		"Petal.Length",
-		"Petal.Width",
-		"Species",
-	}
+	colnames := []string{"a", "b", "c"}
 
 	// Right number of columns
 	got = len(table.Colnames)
@@ -37,7 +32,7 @@ func TestReadCSV(t *testing.T) {
 	// Right number of rows
 	for _, colName := range colnames {
 		got = len(table.Data[colName])
-		want = 150
+		want = 3
 		if got != want {
 			t.Errorf("Inconsistent row count for column %s (got: %d, want: %d)", colName, got, want)
 		}
@@ -45,11 +40,26 @@ func TestReadCSV(t *testing.T) {
 }
 
 func TestMultiply(t *testing.T) {
-	tbl := table
-	tbl.Multiply("result", "Sepal.Length", "Sepal.Width")
-	got1 := tbl.Data["result"][:5]
-	want1 := []int{1, 2, 3, 4, 5}
-	if got1 != want1 {
-		t.Errorf("Inconsistent Table.Multiply result (got: %v, want: %v", got1, want1)
+	tbl := ReadCSV("../testdata/basic.csv")
+
+	var got interface{}
+	var want interface{}
+
+	// Subset of operands
+	tbl.MultiplyAcross("result", []string{"a", "b"})
+	got = tbl.Data["result"]
+	want = []string{"2", "20", "56"}
+	// Slices can't be compared directly, since their underlying arrays might be
+	// different; so reflect.DeepEqual will compare their stored values instead
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Inconsistent Table.Multiply result using two operands (got: %v, want: %v", got, want)
+	}
+
+	// All operands
+	tbl.MultiplyAcross("result", []string{"a", "b", "c"})
+	got = tbl.Data["result"]
+	want = []string{"6", "120", "504"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Inconsistent Table.Multiply result using all possible operands (got: %v, want: %v", got, want)
 	}
 }
