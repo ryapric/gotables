@@ -6,7 +6,7 @@ import (
 )
 
 func TestReadCSV(t *testing.T) {
-	table := ReadCSV("../testdata/basic.csv")
+	tbl := ReadCSV("../testdata/basic.csv")
 
 	var got interface{}
 	var want interface{}
@@ -14,7 +14,7 @@ func TestReadCSV(t *testing.T) {
 	colnames := []string{"a", "b", "c"}
 
 	// Right number of columns
-	got = len(table.Colnames)
+	got = len(tbl.ColNames)
 	want = len(colnames)
 	if got != want {
 		t.Errorf("Not enough column names (got: %d, want: %d", got, want)
@@ -22,16 +22,16 @@ func TestReadCSV(t *testing.T) {
 
 	// Right column names
 	for colIndex := range colnames {
-		got = table.Colnames[colIndex]
+		got = tbl.ColNames[colIndex]
 		want = colnames[colIndex]
 		if got != want {
 			t.Errorf("Unexpected column name at position (got: %s, want: %s)", got, want)
 		}
 	}
 
-	// Right number of rows
+	// Right number of rows (TODO: make sure this is caught at read-time, as well)
 	for _, colName := range colnames {
-		got = len(table.Data[colName])
+		got = tbl.RowCount
 		want = 3
 		if got != want {
 			t.Errorf("Inconsistent row count for column %s (got: %d, want: %d)", colName, got, want)

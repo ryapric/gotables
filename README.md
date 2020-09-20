@@ -25,10 +25,11 @@ func main() {
     // ReadCSV() reads a CSV file directly into a Table struct
     tbl := table.ReadCSV("./testdata/iris.csv")
 
-    // Tables have Colnames, and Data fields, where Data is a colname-keyed map
-    // of the Table contents. You can access columns in the data directly by
-    // indexing into the Table.Data map
-    fmt.Println(tbl.Colnames)
+    // Tables have ColNames, RowCount, and Data fields, where Data is a
+    // colname-keyed map of the Table contents. You can access columns in the
+    // data directly by indexing into the Table.Data map
+    fmt.Println(tbl.ColNames)
+    fmt.Println(tbl.RowCount)
     fmt.Println(tbl.Data["Species"])
     fmt.Println(tbl.Data["Sepal Length"])
 

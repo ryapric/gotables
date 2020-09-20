@@ -8,8 +8,9 @@ import (
 
 // Table is the highest-level struct. Tables are treated as maps
 type Table struct {
-	Colnames []string
+	ColNames []string
 	Data     map[string][]string
+	RowCount int
 }
 
 // ReadCSV will read a CSV file into a Table struct
@@ -26,6 +27,10 @@ func ReadCSV(filepath string) Table {
 	}
 
 	table := tabulateCSV(records)
+
+	// Assign any empty struct fields now that the Table is ready
+	table.RowCount = len(table.Data[table.ColNames[0]])
+
 	return table
 }
 
@@ -52,14 +57,14 @@ func tabulateCSV(records [][]string) Table {
 			tableRaw[colName] = append(tableRaw[colName], records[rowIndex][colIndex])
 		}
 	}
-	table := Table{Colnames: colnames, Data: tableRaw}
+	table := Table{ColNames: colnames, Data: tableRaw}
 	return table
 }
 
 // MultiplyAcross multiples columns together, and stores the result in a column
 // named `result` (i.e. Table.Data["result"])
 func (t *Table) MultiplyAcross(resultCol string, operands []string) {
-	res := make([]string, len(t.Data[operands[0]]))
+	res := make([]string, t.RowCount)
 
 	for operandIdx, operand := range operands {
 		// Stop when you hit the second-to-last operand, otherwise you'll run out of
