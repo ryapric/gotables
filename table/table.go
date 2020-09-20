@@ -9,8 +9,8 @@ import (
 // Table is the highest-level struct. Tables are treated as maps
 type Table struct {
 	ColNames []string
-	Data     map[string][]string
 	RowCount int
+	Data     map[string][]string
 }
 
 // ReadCSV will read a CSV file into a Table struct
